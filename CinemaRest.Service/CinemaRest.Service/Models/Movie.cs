@@ -8,8 +8,8 @@ namespace CinemaRest.Service.Models
     public class Movie : LinkResourceBase
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public string Title;
-        public string Description;
+        public string Title { get; set; }
+        public string Description { get; set; }
         public byte[] ImageData;
         public List<Character> Characters { get; set; } = new List<Character>();
         public List<CrewMember> Crew { get; set; } = new List<CrewMember>();
@@ -28,9 +28,8 @@ namespace CinemaRest.Service.Models
             Crew.Add(member);
         }
        
-        public static List<Movie> GetRepertoire(DateTime date)
+        public static List<Movie> GetRepertoire(CinemaContext dc, DateTime date)
         {
-            CinemaContext dc = CinemaContext.GetContext();
             List<Movie> movies = dc.Movies.Where(item => item.Screenings.Any(i => i.Date == date.ToString("yyyy-MM-dd"))).Select(x => x.DeepClone()).ToList();
             foreach(var m in movies)
             {
@@ -41,9 +40,19 @@ namespace CinemaRest.Service.Models
             return movies;
         }
 
-        public static Movie GetById(Guid id)
+        public static List<Movie> GetAll(CinemaContext dc)
         {
-            return CinemaContext.GetContext().Movies.Where(item => item.Id == id).FirstOrDefault();
+            List<Movie> movies = dc.Movies.Select(x => x.DeepClone()).ToList();
+            foreach (var m in movies)
+            {
+                m.Screenings = null;
+            }
+            return movies;
+        }
+
+        public static Movie GetById(CinemaContext dc, Guid id)
+        {
+            return dc.Movies.Where(item => item.Id == id).FirstOrDefault();
         }
     }
 }

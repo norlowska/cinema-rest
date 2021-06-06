@@ -13,14 +13,8 @@ namespace CinemaRest.Service.Models
         public string Time { get; set; }
         public DateTime FullDate { get; set; }  
         public Screen Screen { get; set; }
-        private List<Seat> _reservedSeats;
-        public List<Seat> ReservedSeats
-        {
-            get
-            {
-                return CinemaContext.GetContext().Reservations.Where(item => item.Screening.Id == this.Id).SelectMany(item => item.Seats).ToList();
-            }
-        }
+        public List<Seat> ReservedSeats { get; set; }
+        
 
         private List<Seat> _freeSeats;
         public List<Seat> FreeSeats
@@ -48,6 +42,11 @@ namespace CinemaRest.Service.Models
             this.Screen = screen;
         }
 
+        public void SetReservedSeats(CinemaContext dc)
+        {
+            this.ReservedSeats = dc.Reservations.Where(item => item.Screening.Id == this.Id).SelectMany(item => item.Seats).ToList();
+        }
+
         public string getDate()
         {
             return FullDate.ToString("yyyy-MM-dd");
@@ -58,9 +57,9 @@ namespace CinemaRest.Service.Models
             return FullDate.ToString("HH:mm");
         }
 
-        public static Screening GetById(Guid id)
+        public static Screening GetById(CinemaContext dc, Guid id)
         {
-            return CinemaContext.GetContext().Screenings.Where(item => item.Id == id).FirstOrDefault();
+            return dc.Screenings.Where(item => item.Id == id).FirstOrDefault();
         }
 
         /// <summary>
@@ -80,9 +79,9 @@ namespace CinemaRest.Service.Models
         /// <param name="chosenSeats"></param>
         /// <param name="chosenSeats"></param>
         /// <returns>Prawda, jeśli którekolwiek z miejsc jest już zarezerwowane</returns>
-        public bool checkSeatsForEdit(List<Seat> chosenSeats, Guid userId)
+        public bool checkSeatsForEdit(CinemaContext dc, List<Seat> chosenSeats, Guid userId)
         {
-            return chosenSeats.Any(item => !Screen.Seats.Exists(i => i.Row == item.Row && i.SeatNumber == item.SeatNumber) || CinemaContext.GetContext().Reservations.Any(i => i.User.Id != userId && i.Seats.Any(ii => ii.Row == item.Row && ii.SeatNumber == item.SeatNumber)));
+            return chosenSeats.Any(item => !Screen.Seats.Exists(i => i.Row == item.Row && i.SeatNumber == item.SeatNumber) || dc.Reservations.Any(i => i.User.Id != userId && i.Seats.Any(ii => ii.Row == item.Row && ii.SeatNumber == item.SeatNumber)));
         }
     }
 }

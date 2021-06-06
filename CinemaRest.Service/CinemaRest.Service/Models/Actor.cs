@@ -15,9 +15,9 @@ namespace CinemaRest.Service.Models
 
         public Actor() { }
        
-        public static Actor GetById(Guid id)
+        public static Actor GetById(CinemaContext dc, Guid id)
         {
-            return CinemaContext.GetContext().Actors.Where(item => item.Id == id).FirstOrDefault();
+            return dc.Actors.Where(item => item.Id == id).FirstOrDefault();
         }
     }
 }

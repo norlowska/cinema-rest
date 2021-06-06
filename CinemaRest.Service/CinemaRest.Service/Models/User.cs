@@ -33,9 +33,9 @@ namespace CinemaRest.Service.Models
         /// </summary>
         /// <param name="email">Adres e-mail</param>
         /// <returns>Model użytkownika</returns>
-        public static User GetByEmail(string email)
+        public static User GetByEmail(CinemaContext dc, string email)
         {
-            return CinemaContext.GetContext().Users.Where(item => item.Email == email).FirstOrDefault();
+            return dc.Users.Where(item => item.Email == email).FirstOrDefault();
         }
 
         /// <summary>
@@ -43,12 +43,12 @@ namespace CinemaRest.Service.Models
         /// </summary>
         /// <param name="user">Użytkownik</param>
         /// <returns>Wartość logiczna, czy zarejestrowano użytkownika</returns>
-        public static bool SignUp(User user)
+        public static bool SignUp(CinemaContext dc, User user)
         {
             if (user != null)
             {
                 user.Password = HashPassword(user.Password);
-                CinemaContext.GetContext().Users.Add(user);
+                dc.Users.Add(user);
             }
             return false;
         }
@@ -59,9 +59,9 @@ namespace CinemaRest.Service.Models
         /// <param name="email">Adres e-mail</param>
         /// <param name="password">Hasło</param>
         /// <returns>Wartość logiczna czy pomyślnie zalogowano</returns>
-        public static bool SignIn(string email, string password)
+        public static bool SignIn(CinemaContext dc, string email, string password)
         {
-            User user = GetByEmail(email);
+            User user = GetByEmail(dc, email);
             if (user != null)
             {
                 return user.VerifyPassword(password);
@@ -104,9 +104,9 @@ namespace CinemaRest.Service.Models
             return true;
         }
 
-        public static User GetById(Guid id)
+        public static User GetById(CinemaContext dc, Guid id)
         {
-            return CinemaContext.GetContext().Users.Where(item => item.Id == id).FirstOrDefault();
+            return dc.Users.Where(item => item.Id == id).FirstOrDefault();
         }
 
         public List<Reservation> getReservation()

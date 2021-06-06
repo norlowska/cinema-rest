@@ -8,12 +8,12 @@ using System.Linq;
 
 namespace CinemaRest.Service.Models
 {
-    public class CinemaContext 
+    public class CinemaContext : ICinemaContext
     {
         private IConfigurationRoot ConfigRoot;
-        private static CinemaContext _context;
-        private CinemaContext()
+        public CinemaContext(IConfiguration configRoot)
         {
+            ConfigRoot = (IConfigurationRoot)configRoot;
             InitUsers();
             InitMovies();
             InitActors();
@@ -23,10 +23,8 @@ namespace CinemaRest.Service.Models
             InitSeats();
             InitScreenings();
             InitReservations();
-        }
-        private CinemaContext(IConfiguration configRoot)
-        {
-            ConfigRoot = (IConfigurationRoot)configRoot;
+            foreach (var s in Screenings)
+                s.SetReservedSeats(this);
         }
 
         /// <summary>
@@ -196,17 +194,17 @@ namespace CinemaRest.Service.Models
             Screenings = new List<Screening>();
             DateTime today = DateTime.Today;
             #region "Co w duszy gra"
-            Screenings.Add(new Screening (new Guid("8a4b86e4-acc9-476f-bae4-a58038791ed6"), new DateTime(today.Year, today.Month, today.Day, 12, 00, 00), Movies.Where(item => item.Id == new Guid("c2b5f1fa-976b-4836-b0d6-0ee2d8e4efe0")).FirstOrDefault(), Screens.Where(item => item.Id == new Guid("40bf5176-ebac-4b14-aaf8-da474480e432")).FirstOrDefault()));
+            Screenings.Add(new Screening(new Guid("8a4b86e4-acc9-476f-bae4-a58038791ed6"), new DateTime(today.Year, today.Month, today.Day, 12, 00, 00), Movies.Where(item => item.Id == new Guid("c2b5f1fa-976b-4836-b0d6-0ee2d8e4efe0")).FirstOrDefault(), Screens.Where(item => item.Id == new Guid("40bf5176-ebac-4b14-aaf8-da474480e432")).FirstOrDefault()));
             Screenings.Add(new Screening(new Guid("dae8591e-ecd7-4a3b-b9d2-76c17cc2042a"), new DateTime(today.Year, today.Month, today.Day, 15, 45, 00), Movies.Where(item => item.Id == new Guid("c2b5f1fa-976b-4836-b0d6-0ee2d8e4efe0")).FirstOrDefault(), Screens.Where(item => item.Id == new Guid("40bf5176-ebac-4b14-aaf8-da474480e432")).FirstOrDefault()));
             Screenings.Add(new Screening(new Guid("bd54a687-65b7-460a-acef-1431960f1e78"), new DateTime(today.Year, today.Month, today.Day, 20, 00, 00), Movies.Where(item => item.Id == new Guid("c2b5f1fa-976b-4836-b0d6-0ee2d8e4efe0")).FirstOrDefault(), Screens.Where(item => item.Id == new Guid("40bf5176-ebac-4b14-aaf8-da474480e432")).FirstOrDefault()));
 
-            Screenings.Add(new Screening (new Guid("aca6edd2-85d3-4673-af10-4007fb749e9f"), new DateTime(today.Year, today.Month, today.Day+1, 12, 00, 00), Movies.Where(item => item.Id == new Guid("c2b5f1fa-976b-4836-b0d6-0ee2d8e4efe0")).FirstOrDefault(), Screens.Where(item => item.Id == new Guid("40bf5176-ebac-4b14-aaf8-da474480e432")).FirstOrDefault()));
+            Screenings.Add(new Screening(new Guid("aca6edd2-85d3-4673-af10-4007fb749e9f"), new DateTime(today.Year, today.Month, today.Day+1, 12, 00, 00), Movies.Where(item => item.Id == new Guid("c2b5f1fa-976b-4836-b0d6-0ee2d8e4efe0")).FirstOrDefault(), Screens.Where(item => item.Id == new Guid("40bf5176-ebac-4b14-aaf8-da474480e432")).FirstOrDefault()));
             Screenings.Add(new Screening(new Guid("c486acd6-c62f-495e-b726-bd3acc8ccbaa"), new DateTime(today.Year, today.Month, today.Day+1, 21, 00, 00), Movies.Where(item => item.Id == new Guid("c2b5f1fa-976b-4836-b0d6-0ee2d8e4efe0")).FirstOrDefault(), Screens.Where(item => item.Id == new Guid("6bb909d4-57a4-48a3-b067-65edbe64ad3d")).FirstOrDefault()));
-            Screenings.Add(new Screening (new Guid("0cc4d40c-71d9-4f5a-a75a-b8230735689f"), new DateTime(today.Year, today.Month, today.Day+1, 14, 40, 00), Movies.Where(item => item.Id == new Guid("c2b5f1fa-976b-4836-b0d6-0ee2d8e4efe0")).FirstOrDefault(), Screens.Where(item => item.Id == new Guid("40bf5176-ebac-4b14-aaf8-da474480e432")).FirstOrDefault()));
+            Screenings.Add(new Screening(new Guid("0cc4d40c-71d9-4f5a-a75a-b8230735689f"), new DateTime(today.Year, today.Month, today.Day+1, 14, 40, 00), Movies.Where(item => item.Id == new Guid("c2b5f1fa-976b-4836-b0d6-0ee2d8e4efe0")).FirstOrDefault(), Screens.Where(item => item.Id == new Guid("40bf5176-ebac-4b14-aaf8-da474480e432")).FirstOrDefault()));
             Screenings.Add(new Screening(new Guid("db57ec8e-5259-496f-91c1-b560bdb757d6"), new DateTime(today.Year, today.Month, today.Day+1, 20, 00, 00), Movies.Where(item => item.Id == new Guid("c2b5f1fa-976b-4836-b0d6-0ee2d8e4efe0")).FirstOrDefault(), Screens.Where(item => item.Id == new Guid("40bf5176-ebac-4b14-aaf8-da474480e432")).FirstOrDefault()));
 
-            Screenings.Add(new Screening (new Guid("b19a13b4-192e-4237-8dc9-f82b8002be81"), new DateTime(today.Year, today.Month, today.Day+2, 12, 00, 00), Movies.Where(item => item.Id == new Guid("c2b5f1fa-976b-4836-b0d6-0ee2d8e4efe0")).FirstOrDefault(), Screens.Where(item => item.Id == new Guid("40bf5176-ebac-4b14-aaf8-da474480e432")).FirstOrDefault()));
-            Screenings.Add(new Screening (new Guid("a6ed14d4-ddd8-4a4b-a73c-547470ef134d"), new DateTime(today.Year, today.Month, today.Day+3, 12, 00, 00), Movies.Where(item => item.Id == new Guid("c2b5f1fa-976b-4836-b0d6-0ee2d8e4efe0")).FirstOrDefault(), Screens.Where(item => item.Id == new Guid("40bf5176-ebac-4b14-aaf8-da474480e432")).FirstOrDefault()));
+            Screenings.Add(new Screening(new Guid("b19a13b4-192e-4237-8dc9-f82b8002be81"), new DateTime(today.Year, today.Month, today.Day+2, 12, 00, 00), Movies.Where(item => item.Id == new Guid("c2b5f1fa-976b-4836-b0d6-0ee2d8e4efe0")).FirstOrDefault(), Screens.Where(item => item.Id == new Guid("40bf5176-ebac-4b14-aaf8-da474480e432")).FirstOrDefault()));
+            Screenings.Add(new Screening(new Guid("a6ed14d4-ddd8-4a4b-a73c-547470ef134d"), new DateTime(today.Year, today.Month, today.Day+3, 12, 00, 00), Movies.Where(item => item.Id == new Guid("c2b5f1fa-976b-4836-b0d6-0ee2d8e4efe0")).FirstOrDefault(), Screens.Where(item => item.Id == new Guid("40bf5176-ebac-4b14-aaf8-da474480e432")).FirstOrDefault()));
             #endregion
 
             #region "Diuna"
@@ -314,15 +312,6 @@ namespace CinemaRest.Service.Models
             {
                 new User (new Guid("0a3c1947-19de-4942-a2dd-0bf2a2c9cff5"), "kontakt@norlowska.com", "epMz1AKqh2IAZvi+qcRbxAWOGCfaQBqhLGyU98g5pgDiTsCA", "Natalia", "Orłowska")
             };
-        }
-
-        public static CinemaContext GetContext()
-        {
-            if (_context == null)
-            {
-                _context = new CinemaContext();
-            }
-            return _context;
         }
 
         public ICollection<User> Users { get; set; }

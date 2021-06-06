@@ -30,32 +30,30 @@ namespace CinemaRest.Service.Models
             Seats.Add(seat);
         }
 
-        public static Reservation BookScreening(Screening screening, List<Seat> chosenSeats, string email) //w argumecnie/broszurze trzeba przekazać na jaki seans oraz jake siedzenia rezerwujesz oraz uzytkownika
+        public static Reservation BookScreening(CinemaContext dc, Screening screening, List<Seat> chosenSeats, string email) //w argumecnie/broszurze trzeba przekazać na jaki seans oraz jake siedzenia rezerwujesz oraz uzytkownika
         {
             if (screening.checkSeats(chosenSeats)) return null;
             else
             {
-                CinemaContext cinemaContext = CinemaContext.GetContext();
                 Reservation newReservation = new Reservation();
-                User user = User.GetByEmail(email);
+                User user = User.GetByEmail(dc, email);
                 newReservation.User = user;
                 newReservation.Screening = screening;
-                chosenSeats.ForEach(item => item.Id = cinemaContext.Seats.Where(i => i.Screen.Id == screening.Screen.Id && i.Row == item.Row && i.SeatNumber == item.SeatNumber).FirstOrDefault().Id);
+                chosenSeats.ForEach(item => item.Id = dc.Seats.Where(i => i.Screen.Id == screening.Screen.Id && i.Row == item.Row && i.SeatNumber == item.SeatNumber).FirstOrDefault().Id);
                 newReservation.Seats = chosenSeats;
                 user.Reservations.Add(newReservation);
-                cinemaContext.Reservations.Add(newReservation);
+                dc.Reservations.Add(newReservation);
                 return newReservation;                
             }
         }
 
-        public List<Seat> ConvertSeatsTabToList(Guid sID, int[][] seatsTab)
+        public List<Seat> ConvertSeatsTabToList(CinemaContext dc, Guid sID, int[][] seatsTab)
         {
             List<Seat> seatsList = new List<Seat>();
-            CinemaContext cinemaContext = CinemaContext.GetContext();
-            Screening screening = Screening.GetById(sID);
+            Screening screening = Screening.GetById(dc, sID);
             for (int i =0; i<seatsTab.Length; i++)
             {
-                seatsList.Add(cinemaContext.Seats.FirstOrDefault(Seat => 
+                seatsList.Add(dc.Seats.FirstOrDefault(Seat => 
                 {
                     return Seat.Screen == screening.Screen && Seat.Row == seatsTab[i][0] && Seat.SeatNumber == seatsTab[i][1];
                 }
@@ -100,13 +98,12 @@ $"<p>{User.Email}</p>";
             }
         }
 
-        public bool cancelReservation()
+        public bool cancelReservation(CinemaContext dc)
         {
             try { 
-                CinemaContext cinemaContext = CinemaContext.GetContext();
-            this.User.Reservations.Remove(this);
-            cinemaContext.Reservations.Remove(this);
-            return true;
+                this.User.Reservations.Remove(this);
+                dc.Reservations.Remove(this);
+                return true;
             } catch(Exception ex)
             {
                 Console.WriteLine(ex);
@@ -119,21 +116,20 @@ $"<p>{User.Email}</p>";
         /// </summary>
         /// <param name="id">Identyfikator</param>
         /// <returns></returns>
-        public static Reservation GetById(Guid id)
+        public static Reservation GetById(CinemaContext dc, Guid id)
         {
-            return CinemaContext.GetContext().Reservations.Where(item => item.Id == id).FirstOrDefault();
+            return dc.Reservations.Where(item => item.Id == id).FirstOrDefault();
         }
 
-        public static Reservation editReservation(EditReservationRequestDTO editedReservation) 
+        public static Reservation editReservation(CinemaContext dc, EditReservationRequestDTO editedReservation) 
         {
-            CinemaContext cinemaContext = CinemaContext.GetContext();
-            Reservation originalReservation = cinemaContext.Reservations.Where(item => item.Id == editedReservation.Id).FirstOrDefault();
+            Reservation originalReservation = dc.Reservations.Where(item => item.Id == editedReservation.Id).FirstOrDefault();
             if (originalReservation != null)
             {
-                if (originalReservation.Screening.checkSeatsForEdit(editedReservation.Seats, originalReservation.User.Id)) return null; //check if editedReservation's seats aren't already taken
+                if (originalReservation.Screening.checkSeatsForEdit(dc, editedReservation.Seats, originalReservation.User.Id)) return null; //check if editedReservation's seats aren't already taken
                 else
                 {
-                    editedReservation.Seats.ForEach(item => item.Id = cinemaContext.Seats.Where(i => i.Screen.Id == originalReservation.Screening.Screen.Id && i.Row == item.Row && i.SeatNumber == item.SeatNumber).FirstOrDefault().Id);
+                    editedReservation.Seats.ForEach(item => item.Id = dc.Seats.Where(i => i.Screen.Id == originalReservation.Screening.Screen.Id && i.Row == item.Row && i.SeatNumber == item.SeatNumber).FirstOrDefault().Id);
                     originalReservation.Seats = editedReservation.Seats;
                     return originalReservation;
                 }
