@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace CinemaRest.Service.Controllers
@@ -17,12 +20,20 @@ namespace CinemaRest.Service.Controllers
         {
             _context = context;
         }
+
         [HttpGet]
         public List<Movie> GetMovies([FromQuery] string date)
         {
             if (string.IsNullOrEmpty(date))
                 return Movie.GetAll((CinemaContext)_context);
             return Movie.GetRepertoire((CinemaContext)_context, DateTime.Parse(date));
+        }
+
+        [HttpGet("{id}/Poster")]
+        public FileResult GetPoster(Guid id)
+        {
+            byte[] bytes = Movie.GetById((CinemaContext)_context, id).ImageData;
+            return File(bytes, "image/jpeg");
         }
     }
 }

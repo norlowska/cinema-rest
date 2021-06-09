@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="513.0" minWidth="810.0" prefHeight="513.0" prefWidth="810.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cinemarest.client.views.RepertoireController">
+   <children>
+      <HBox layoutX="180.0" layoutY="68.0" prefHeight="38.0" prefWidth="450.0">
+         <children>
+            <ToggleButton fx:id="toggleDate1" prefHeight="31.0" prefWidth="90.0" selected="true">
+               <toggleGroup>
+                  <ToggleGroup fx:id="dateToggle" />
+               </toggleGroup>
+            </ToggleButton>
+           <ToggleButton fx:id="toggleDate2" prefHeight="31.0" prefWidth="90.0" toggleGroup="$dateToggle">
+           </ToggleButton>
+            <ToggleButton fx:id="toggleDate3" prefHeight="31.0" prefWidth="90.0" toggleGroup="$dateToggle" />
+            <ToggleButton fx:id="toggleDate4" prefHeight="31.0" prefWidth="90.0" toggleGroup="$dateToggle" />
+            <ToggleButton fx:id="toggleDate5" prefHeight="31.0" prefWidth="90.0" toggleGroup="$dateToggle" />
+         </children>
+      </HBox>
+      <ListView fx:id="repertoireList" layoutX="56.0" layoutY="125.0" prefHeight="347.0" prefWidth="700.0" />
+      <Text fill="#110b38" layoutX="303.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="REPERTUAR" wrappingWidth="206.08984375">
+         <font>
+            <Font name="System Bold" size="35.0" />
+         </font>
+      </Text>
+      <Button fx:id="accountButton" layoutX="719.0" layoutY="18.0" mnemonicParsing="false" text="Moje konto" />
+   </children>
+</Pane>
