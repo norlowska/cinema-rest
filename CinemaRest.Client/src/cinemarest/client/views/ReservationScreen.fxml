@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Button fx:id="bookButton" alignment="CENTER" layoutX="431.0" layoutY="354.0" mnemonicParsing="false" text="Rezerwuj" />
+      <Button fx:id="cancelButton" alignment="CENTER" layoutX="513.0" layoutY="354.0" mnemonicParsing="false" text="Anuluj" />
+      <ListView fx:id="seatsView" layoutX="255.0" layoutY="51.0" prefHeight="288.0" prefWidth="220.0" />
+      <Label layoutX="335.0" layoutY="15.0" text="Dostępne miejsca">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <ImageView fx:id="posterView" fitHeight="200.0" fitWidth="145.0" layoutX="66.0" layoutY="139.0" pickOnBounds="true" preserveRatio="true" />
+      <Label fx:id="infoLabel" alignment="TOP_LEFT" layoutX="42.0" layoutY="51.0" prefHeight="85.0" prefWidth="194.0" text="Label">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

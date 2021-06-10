@@ -1,5 +1,4 @@
-﻿using CinemaRest.Service.DataShapes;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using SelectPdf;
 using System;
 using System.Collections.Generic;
@@ -19,10 +18,11 @@ namespace CinemaRest.Service.Models
         public List<Seat> Seats { get; set; } = new List<Seat>();
         public bool Deleted { get; set; } = false;
 
-        public Reservation() { }
-        public Reservation(IConfiguration configRoot)
-        {
-            ConfigRoot = (IConfigurationRoot)configRoot; 
+        public Reservation() {
+            ConfigRoot = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
         }
 
         public void AddSeat(Seat seat)
@@ -30,13 +30,13 @@ namespace CinemaRest.Service.Models
             Seats.Add(seat);
         }
 
-        public static Reservation BookScreening(CinemaContext dc, Screening screening, List<Seat> chosenSeats, string email) //w argumecnie/broszurze trzeba przekazać na jaki seans oraz jake siedzenia rezerwujesz oraz uzytkownika
+        public static Reservation MakeReservation(CinemaContext dc, Screening screening, List<Seat> chosenSeats, string email) //w argumecnie/broszurze trzeba przekazać na jaki seans oraz jake siedzenia rezerwujesz oraz uzytkownika
         {
             if (screening.checkSeats(chosenSeats)) return null;
             else
             {
                 Reservation newReservation = new Reservation();
-                User user = User.GetByEmail(dc, email);
+                User user = User.GetByEmail(dc, "kontakt@norlowska.com");
                 newReservation.User = user;
                 newReservation.Screening = screening;
                 chosenSeats.ForEach(item => item.Id = dc.Seats.Where(i => i.Screen.Id == screening.Screen.Id && i.Row == item.Row && i.SeatNumber == item.SeatNumber).FirstOrDefault().Id);
@@ -66,29 +66,28 @@ namespace CinemaRest.Service.Models
         {
             try
             {
-                string filePath = Path.Combine(ConfigRoot.GetSection("AppDataPath").Value, $"Reservation{this.Id}");
+                string filePath = Path.Combine(ConfigRoot.GetSection("AppDataPath").Value, $"Reservation-{this.Id}.pdf");
                 string seats = string.Empty;
                 foreach (Seat s in Seats)
                 {
                     seats += "Seat: " + s.SeatNumber + ", Row: " + s.Row + "<br />";
                 }
                 var myHtml =
-"<style>h1 {font-size:12px;}</style>" +
+"<style>body {padding: 60px 40px; font-size:20px;} h1 {font-size:24px;}</style>" +
 "<h1>Reservation confirmation</h1>" +
 $"<p>Reservation no. {Id}</p>" +
 $"<p>Title: <b>{Screening.Movie.Title}</b></p>" +
-"<p>Date " + this.Id + "</p>" +
+$"<p>Date {this.Screening.FullDate.ToString("dd.MM.yyyy HH:mm")}</p>" +
 $"<p>Screen no. {Screening.Screen.Name}</p>" +
 "<p>Seats <br />" + seats + "</p>" +
-$"<p>{User.FirstName} {User.LastName}</p>" +
-$"<p>{User.Email}</p>";
+$"<p>{User.FirstName} {User.LastName}<br />{User.Email}</p>";
 
                 HtmlToPdf converter = new HtmlToPdf();
                 PdfDocument doc = converter.ConvertHtmlString(myHtml);
-                doc.Save(filePath + ".pdf");
+                doc.Save(filePath);
                 doc.Close();
 
-                byte[] bytes = System.IO.File.ReadAllBytes(filePath + ".pdf");
+                byte[] bytes = System.IO.File.ReadAllBytes(filePath);
                 return bytes;
             }
             catch (Exception ex)
@@ -121,16 +120,22 @@ $"<p>{User.Email}</p>";
             return dc.Reservations.Where(item => item.Id == id).FirstOrDefault();
         }
 
-        public static Reservation editReservation(CinemaContext dc, EditReservationRequestDTO editedReservation) 
+        /// <summary>
+        /// Edycja istniejącej rezerwacji
+        /// </summary>
+        /// <param name="dc"></param>
+        /// <param name="editedReservation"></param>
+        /// <returns></returns>
+        public static Reservation EditReservation(CinemaContext dc, Guid Id, List<Seat> seats) 
         {
-            Reservation originalReservation = dc.Reservations.Where(item => item.Id == editedReservation.Id).FirstOrDefault();
+            Reservation originalReservation = dc.Reservations.Where(item => item.Id == Id).FirstOrDefault();
             if (originalReservation != null)
             {
-                if (originalReservation.Screening.checkSeatsForEdit(dc, editedReservation.Seats, originalReservation.User.Id)) return null; //check if editedReservation's seats aren't already taken
+                if (originalReservation.Screening.checkSeatsForEdit(dc, seats, originalReservation.User.Id)) throw new Exception("Wybrane miejsca są zajęte");
                 else
                 {
-                    editedReservation.Seats.ForEach(item => item.Id = dc.Seats.Where(i => i.Screen.Id == originalReservation.Screening.Screen.Id && i.Row == item.Row && i.SeatNumber == item.SeatNumber).FirstOrDefault().Id);
-                    originalReservation.Seats = editedReservation.Seats;
+                    seats.ForEach(item => item.Id = dc.Seats.Where(i => i.Screen.Id == originalReservation.Screening.Screen.Id && i.Row == item.Row && i.SeatNumber == item.SeatNumber).FirstOrDefault().Id);
+                    originalReservation.Seats = seats;
                     return originalReservation;
                 }
             }

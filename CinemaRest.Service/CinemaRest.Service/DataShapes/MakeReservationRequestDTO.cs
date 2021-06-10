@@ -7,9 +7,9 @@ using System.Web;
 
 namespace CinemaRest.Service.DataShapes
 {
-    public class EditReservationRequestDTO
+    public class MakeReservationRequestDTO
     {
-        public Guid Id;
-        public List<Seat> Seats;
+        public Guid ScreeningId { get; set; }
+        public List<Seat> Seats { get; set; }
     }
 }

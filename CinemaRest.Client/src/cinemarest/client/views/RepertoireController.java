@@ -1,6 +1,7 @@
 package cinemarest.client.views;
 
 import cinemarest.client.models.Movie;
+import cinemarest.client.models.Screening;
 import cinemarest.client.service.CinemaRestService;
 import cinemarest.client.service.ICinemaService;
 import javafx.beans.value.ChangeListener;
@@ -9,9 +10,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -95,6 +99,17 @@ public class RepertoireController implements Initializable {
                 if (click.getClickCount() == 2) {
                     Movie currentItemSelected = (Movie) repertoireList.getSelectionModel().getSelectedItem();
                     try {
+                        FXMLLoader loader = new FXMLLoader(getClass().getResource("MovieRepertoireScreen.fxml"));
+                        List<Screening> screenings = currentItemSelected.getScreenings();
+                        for(Screening s : screenings)
+                            s.setMovie(currentItemSelected);
+                        loader.setController(new MovieRepertoireScreenController(screenings));
+                        Scene sc = new Scene(loader.load(), 600, 400);
+                        Stage stage = new Stage();
+                        stage.setScene(sc);
+                        stage.setTitle("Seanse \"" + screenings.get(0).getMovie().getTitle() + "\" | Cinema SOAP");
+
+                        stage.show();
                     }
                     catch (Exception e)
                     {
