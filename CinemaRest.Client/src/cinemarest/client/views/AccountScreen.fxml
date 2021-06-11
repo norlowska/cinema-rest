@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label layoutX="207.0" layoutY="14.0" text="Moje rezerwacje">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <ListView fx:id="reservationList" layoutX="36.0" layoutY="67.0" prefHeight="279.0" prefWidth="528.0" />
+      <Button fx:id="cancelBtn" layoutX="512.0" layoutY="361.0" mnemonicParsing="false" text="Powrót" />
+   </children>
+</AnchorPane>

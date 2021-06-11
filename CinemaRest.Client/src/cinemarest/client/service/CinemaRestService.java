@@ -126,18 +126,15 @@ public class CinemaRestService implements ICinemaService {
     @Override
     public List<Reservation> getReservationList(String email)
     {
-        List<Reservation> reservations = new ArrayList<>();
-        //kontakt@norlowska.com
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
+        OkHttpClient client = httpClient.build();
         Request request = new Request.Builder()
                 .url("https://localhost:44318/api/Reservation?email=" + email)
                 .method("GET", null)
                 .build();
         try(Response response = client.newCall(request).execute()) {
             Type listOfMyClassObject = new TypeToken<ArrayList<Reservation>>() {}.getType();
-
-            return gson.fromJson(response.body().string(), listOfMyClassObject);
+            String ss = response.body().string();
+            return gson.fromJson(ss, listOfMyClassObject);
         }
         catch(Exception ex) {
             ex.printStackTrace();
@@ -148,7 +145,7 @@ public class CinemaRestService implements ICinemaService {
     @Nullable
     private JsonObject getReservationResponseJsonObject(OkHttpClient client, Request request) {
         try(Response response = client.newCall(request).execute()) {
-            if(response.code() == 500) return gson.fromJson(response.body().string(), JsonObject.class);
+            if(response.code() != 200) return gson.fromJson(response.body().string(), JsonObject.class);
             byte[] byteArr = response.body().bytes();
             Headers headers = response.headers();
 

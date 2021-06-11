@@ -67,9 +67,16 @@ namespace CinemaRest.Service.Controllers
         [HttpGet]
         public List<Reservation> GetReservationList([FromQuery] String email)
         {
-            List<Reservation> reservations = ((CinemaContext)_context).Reservations.Where(item => item.User.Email == email).ToList();
-
-            return reservations;
+            User user = ExtensionMethods.DeepClone<User>(Models.User.GetByEmail((CinemaContext)_context, email));
+            if (user == null) return null;
+            foreach (var r in user.Reservations)
+            {
+                r.User = null;
+                r.Screening.Movie.Characters = null;
+                r.Screening.Movie.Crew = null;
+                r.Screening.Screen.Seats = null;
+            }
+            return user.Reservations;
         }
 
 

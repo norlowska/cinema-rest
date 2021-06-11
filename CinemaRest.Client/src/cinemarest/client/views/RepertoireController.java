@@ -122,6 +122,14 @@ public class RepertoireController implements Initializable {
         accountButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("AccountScreen.fxml"));
+                    loader.setController(new AccountScreenController());
+                    Scene sc = null;
+                    sc = new Scene(loader.load(), 600, 400);
+                    Stage stage = new Stage();
+                    stage.setScene(sc);
+                    stage.setTitle("Moje konto | Cinema SOAP");
+                    stage.show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
