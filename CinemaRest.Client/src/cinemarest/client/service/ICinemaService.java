@@ -14,4 +14,5 @@ public interface ICinemaService {
     public byte[] getPoster(String id);
     public JsonObject bookScreening(String id, List<Seat> seats, String email);
     public JsonObject editReservation(Reservation reservation);
+    public List<Reservation> getReservationList(String email);
 }
