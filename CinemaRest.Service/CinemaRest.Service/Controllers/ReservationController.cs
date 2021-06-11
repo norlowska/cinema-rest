@@ -79,6 +79,13 @@ namespace CinemaRest.Service.Controllers
             return user.Reservations;
         }
 
-
+        [HttpDelete("{id}")]
+        public bool CancelReservation([FromRoute] Guid id)
+        {
+            Reservation reservation = Reservation.GetById((CinemaContext)_context, id);
+            if (reservation != null)
+                return reservation.cancelReservation((CinemaContext)_context);
+            return false;
+        }
     }
 }

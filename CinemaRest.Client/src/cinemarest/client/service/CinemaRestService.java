@@ -163,4 +163,20 @@ public class CinemaRestService implements ICinemaService {
         }
         return null;
     }
+
+    @Override
+    public boolean cancelReservation(String id) {
+        OkHttpClient client = httpClient.build();
+        Request request = new Request.Builder()
+                .url("https://localhost:44318/api/Reservation/" + id)
+                .method("DELETE", null)
+                .build();
+        try(Response response = client.newCall(request).execute()) {
+            return gson.fromJson(response.body().string(), boolean.class);
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
 }

@@ -13,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -102,13 +103,18 @@ public class ReservationCellController extends ListCell<Reservation> {
                 public void handle(MouseEvent event) {
                     if (reservation != null) {
                         try {
-                            //service.cancelReservation(reservation.getId());
-                            getListView().getItems().remove(getItem());
+                            if(service.cancelReservation(reservation.getId())) {
+                                getListView().getItems().remove(getItem());
+                                return;
+                            }
+
                         } catch (Exception e) {
                             e.printStackTrace();
-                        }
-                    } else {
 
+                        }
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setContentText("Niepowodzenie podczas usuwania rezerwacji.");
+                        alert.show();
                     }
                 }
             });
