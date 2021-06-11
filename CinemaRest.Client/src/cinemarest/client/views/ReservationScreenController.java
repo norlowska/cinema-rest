@@ -1,5 +1,6 @@
 package cinemarest.client.views;
 
+import cinemarest.client.Main;
 import cinemarest.client.models.Movie;
 import cinemarest.client.models.Reservation;
 import cinemarest.client.models.Screening;
@@ -121,7 +122,7 @@ public class ReservationScreenController implements Initializable {
                     res = service.editReservation(newReservation);
                 }
                 else {
-                     res = service.bookScreening(screening.getId(), seats, "");
+                     res = service.bookScreening(screening.getId(), seats, Main.getUserEmail());
                 }
 
                 if(Integer.parseInt(res.get("status").getAsString()) > 300) {

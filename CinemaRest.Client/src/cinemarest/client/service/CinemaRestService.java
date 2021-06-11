@@ -1,44 +1,41 @@
 package cinemarest.client.service;
 
+import cinemarest.client.Main;
+import cinemarest.client.RequestInterceptor;
 import cinemarest.client.models.MakeReservationRequest;
 import cinemarest.client.models.Movie;
 import cinemarest.client.models.Reservation;
 import cinemarest.client.models.Seat;
+import cinemarest.client.views.RepertoireController;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.*;
-import okio.Buffer;
-import okio.BufferedSink;
-import okio.BufferedSource;
-import okio.Okio;
 import org.jetbrains.annotations.Nullable;
-import org.omg.CORBA.portable.OutputStream;
-import sun.misc.IOUtils;
+import sun.misc.BASE64Encoder;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.handler.MessageContext;
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class CinemaRestService implements ICinemaService {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     Gson gson;
+    OkHttpClient.Builder httpClient;
 
     public CinemaRestService() {
         gson = new GsonBuilder().setLenient().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
+        httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(new RequestInterceptor());
     }
 
     @Override
     public List<Movie> getRepertoire(String date) {
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
+        OkHttpClient client = httpClient.build();
         Request request = new Request.Builder()
                 .url("https://localhost:44318/api/Movie?date=" + date)
                 .method("GET", null)
@@ -56,8 +53,7 @@ public class CinemaRestService implements ICinemaService {
 
     @Override
     public byte[] getPoster(String id) {
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
+        OkHttpClient client = httpClient.build();
         Request request = new Request.Builder()
                 .url("https://localhost:44318/api/Movie/" + id + "/Poster")
                 .method("GET", null)
@@ -73,8 +69,7 @@ public class CinemaRestService implements ICinemaService {
 
     @Override
     public JsonObject bookScreening(String id, List<Seat> seats, String email) {
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
+        OkHttpClient client = httpClient.build();
 
         MakeReservationRequest dto = new MakeReservationRequest();
         dto.setScreeningId(id);
@@ -86,13 +81,13 @@ public class CinemaRestService implements ICinemaService {
                 .url("https://localhost:44318/api/Reservation/")
                 .method("POST", body)
                 .build();
+
         return getReservationResponseJsonObject(client, request);
     }
 
     @Override
     public JsonObject editReservation(Reservation reservation) {
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
+        OkHttpClient client = httpClient.build();
 
         String data = gson.toJson(reservation.getSeats());
         RequestBody body = RequestBody.create(data, JSON);
@@ -102,6 +97,30 @@ public class CinemaRestService implements ICinemaService {
                 .method("PUT", null)
                 .build();
         return getReservationResponseJsonObject(client, request);
+    }
+
+    @Override
+    public JsonObject signIn(String email, String password) {
+        String authString = email + ":" + password;
+        String authStringEnc = new BASE64Encoder().encode(authString.getBytes());
+        Main.setAuthHeaderValue(authStringEnc);
+
+        OkHttpClient client = httpClient.build();
+        Request request = new Request.Builder()
+                .url("https://localhost:44318/api/User/Login")
+                .method("POST", RequestBody.create(null, new byte[]{}))
+                .build();
+
+        try(Response response = client.newCall(request).execute()) {
+            if(response.code() == 500) return gson.fromJson(response.body().string(), JsonObject.class);
+            if(response.code() != 200) return gson.fromJson(response.body().string(), JsonObject.class);
+            Main.setUserEmail(email);
+            return null;
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     @Nullable

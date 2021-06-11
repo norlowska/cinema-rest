@@ -1,0 +1,15 @@
+.list-cell:filled:selected:focused, .list-cell:filled:selected  {
+    -fx-background-color: #b4c2d1;
+}
+
+.list-cell:filled:selected:focused .label, .list-cell:filled:selected .label {
+    -fx-text-fill: #3f3f3f;
+}
+
+.list-cell {
+    -fx-background-color: white;
+}
+
+.list-cell:even {
+    -fx-background-color: #e6e6e6;
+}

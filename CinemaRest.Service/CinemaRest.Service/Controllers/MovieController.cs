@@ -1,6 +1,7 @@
 ﻿using CinemaRest.Service.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace CinemaRest.Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [HeaderAuthorizationBasicAttribute]
     public class MovieController : ControllerBase
     {
         private readonly ICinemaContext _context;

@@ -8,6 +8,7 @@ namespace CinemaRest.Service.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [HeaderAuthorizationBasic]
     public class ReservationController : ControllerBase
     {
         private readonly ICinemaContext _context;
@@ -49,6 +50,7 @@ namespace CinemaRest.Service.Controllers
                 if (reservation == null)
                     return Problem("Nie znaleziono rezerwacji.");
                 byte[] pdfBytes = reservation.preparePDF();
+                
                 if (pdfBytes == null) return Problem("Wystąpił błąd podczas generowania potwierdzenia rezerwacji.");
                 return new FileContentResult(pdfBytes, "application/pdf")
                 {

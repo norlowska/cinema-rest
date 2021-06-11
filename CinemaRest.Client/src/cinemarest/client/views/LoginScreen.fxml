@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cinemarest.client.views.LoginScreenController">
+    <Text layoutX="228.0" layoutY="63.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Logowanie">
+        <font>
+            <Font size="30.0" />
+        </font>
+    </Text>
+    <Text layoutX="280.0" layoutY="120.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Email:" />
+    <Text layoutX="280.0" layoutY="182.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hasło:" />
+    <TextField fx:id="emailTextBox" alignment="CENTER" layoutX="222.0" layoutY="123.0" promptText="nowak@email.com" />
+    <PasswordField fx:id="passwordTextBox" layoutX="226.0" layoutY="188.0" promptText="haslo123" />
+    <Button fx:id="loginButton" layoutX="246.0" layoutY="242.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="104.0" text="Zaloguj" />
+</AnchorPane>
