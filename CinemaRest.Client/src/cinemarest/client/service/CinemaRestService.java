@@ -123,6 +123,28 @@ public class CinemaRestService implements ICinemaService {
         return null;
     }
 
+    @Override
+    public List<Reservation> getReservationList(String email)
+    {
+        List<Reservation> reservations = new ArrayList<>();
+        //kontakt@norlowska.com
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        Request request = new Request.Builder()
+                .url("https://localhost:44318/api/Reservation?email=" + email)
+                .method("GET", null)
+                .build();
+        try(Response response = client.newCall(request).execute()) {
+            Type listOfMyClassObject = new TypeToken<ArrayList<Reservation>>() {}.getType();
+
+            return gson.fromJson(response.body().string(), listOfMyClassObject);
+        }
+        catch(Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
     @Nullable
     private JsonObject getReservationResponseJsonObject(OkHttpClient client, Request request) {
         try(Response response = client.newCall(request).execute()) {

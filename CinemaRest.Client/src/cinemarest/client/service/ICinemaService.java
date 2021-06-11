@@ -15,4 +15,5 @@ public interface ICinemaService {
     public JsonObject bookScreening(String id, List<Seat> seats, String email);
     public JsonObject editReservation(Reservation reservation);
     public JsonObject signIn(String email, String password);
+    public List<Reservation> getReservationList(String email);
 }

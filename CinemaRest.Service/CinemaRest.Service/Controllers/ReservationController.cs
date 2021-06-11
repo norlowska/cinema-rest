@@ -3,6 +3,7 @@ using CinemaRest.Service.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CinemaRest.Service.Controllers
 {
@@ -62,5 +63,15 @@ namespace CinemaRest.Service.Controllers
                 return Problem("Wystąpił błąd podczas aktualizacji rezerwacji. " + ex.Message);
             }
         }
+
+        [HttpGet]
+        public List<Reservation> GetReservationList([FromQuery] String email)
+        {
+            List<Reservation> reservations = ((CinemaContext)_context).Reservations.Where(item => item.User.Email == email).ToList();
+
+            return reservations;
+        }
+
+
     }
 }
