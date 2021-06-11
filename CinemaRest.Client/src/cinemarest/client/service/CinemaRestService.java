@@ -7,10 +7,7 @@ import cinemarest.client.models.Movie;
 import cinemarest.client.models.Reservation;
 import cinemarest.client.models.Seat;
 import cinemarest.client.views.RepertoireController;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import okhttp3.*;
 import org.jetbrains.annotations.Nullable;
@@ -94,13 +91,13 @@ public class CinemaRestService implements ICinemaService {
 
         Request request = new Request.Builder()
                 .url("https://localhost:44318/api/Reservation/" + reservation.getId())
-                .method("PUT", null)
+                .method("PUT", body)
                 .build();
         return getReservationResponseJsonObject(client, request);
     }
 
     @Override
-    public JsonObject signIn(String email, String password) {
+    public JsonPrimitive signIn(String email, String password) {
         String authString = email + ":" + password;
         String authStringEnc = new BASE64Encoder().encode(authString.getBytes());
         Main.setAuthHeaderValue(authStringEnc);
@@ -112,10 +109,9 @@ public class CinemaRestService implements ICinemaService {
                 .build();
 
         try(Response response = client.newCall(request).execute()) {
-            if(response.code() == 500) return gson.fromJson(response.body().string(), JsonObject.class);
-            if(response.code() != 200) return gson.fromJson(response.body().string(), JsonObject.class);
+            if(response.code() > 300) return new JsonPrimitive(response.body().string());
             Main.setUserEmail(email);
-            return null;
+            return new JsonPrimitive(Boolean.parseBoolean(response.body().string()));
         }
         catch(Exception ex) {
             ex.printStackTrace();

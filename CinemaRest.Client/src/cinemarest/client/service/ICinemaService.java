@@ -3,7 +3,9 @@ package cinemarest.client.service;
 import cinemarest.client.models.Movie;
 import cinemarest.client.models.Reservation;
 import cinemarest.client.models.Seat;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import java.io.InputStream;
 import java.util.Date;
@@ -14,7 +16,7 @@ public interface ICinemaService {
     public byte[] getPoster(String id);
     public JsonObject bookScreening(String id, List<Seat> seats, String email);
     public JsonObject editReservation(Reservation reservation);
-    public JsonObject signIn(String email, String password);
+    public JsonPrimitive signIn(String email, String password);
     public List<Reservation> getReservationList(String email);
     public boolean cancelReservation(String id);
 }

@@ -10,6 +10,7 @@ namespace CinemaRest.Service.Controllers
 {
     [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
     [ApiController]
+    [HeaderAuthorizationBasic]
     public class UserController : ControllerBase
     {
         public UserController() { }

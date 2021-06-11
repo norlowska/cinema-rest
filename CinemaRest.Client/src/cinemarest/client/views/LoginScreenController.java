@@ -12,7 +12,10 @@ import java.util.*;
 import cinemarest.client.Main;
 import cinemarest.client.service.CinemaRestService;
 import cinemarest.client.service.ICinemaService;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -66,10 +69,11 @@ public class LoginScreenController implements Initializable {
                 loader = new FXMLLoader(getClass().getResource("Repertoire.fxml"));
 
                 try {
-                    JsonObject json = service.signIn(loginData[0], loginData[1]);
-                    if(json != null) {
+                    JsonPrimitive result =service.signIn(loginData[0], loginData[1]);
+                    if(result.isString()) {
+                        JsonPrimitive primitive = result.getAsJsonPrimitive();
                         Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setContentText("Nieprawidłowe dane logowania. Spróbuj ponownie.");
+                        alert.setContentText(primitive.getAsString());
                         alert.show();
                         Main.setAuthHeaderValue("");
                         Main.setUserEmail("");
@@ -77,7 +81,7 @@ public class LoginScreenController implements Initializable {
                     }
                 } catch (Exception ex) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setContentText("Nieprawidłowe dane logowania. Spróbuj ponownie.");
+                    alert.setContentText("Wystąpił błąd podczas logowania");
                     alert.show();
                     Main.setAuthHeaderValue("");
                     Main.setUserEmail("");

@@ -70,6 +70,7 @@ public class ReservationScreenController implements Initializable {
 
     public ReservationScreenController(Reservation reservation, boolean isEdit)
     {
+        service = new CinemaRestService();
         this.reservation = reservation;
         this.movie = reservation.getScreening().getMovie();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd");
@@ -85,7 +86,10 @@ public class ReservationScreenController implements Initializable {
         this.isEdit = isEdit;
         seats = FXCollections.observableArrayList();
         List<Seat> seatsList = screening.getFreeSeats();
-        seatsList.addAll(reservation.getSeats());
+        for(Seat s : reservation.getSeats()) {
+            if(!seatsList.stream().anyMatch(i -> i.getId().equals(s.getId())))
+                seatsList.add(s);
+        }
         Comparator<Seat> comparator = Comparator.comparing(seat -> seat.getRow());
         comparator = comparator.thenComparing(seat -> seat.getSeatNumber());
         Stream<Seat> seatStream = seatsList.stream().sorted(comparator);
