@@ -13,10 +13,10 @@ import java.util.List;
 
 public interface ICinemaService {
     public List<Movie> getRepertoire(String date);
-    public byte[] getPoster(String id);
-    public JsonObject bookScreening(String id, List<Seat> seats, String email);
+    public byte[] getPoster(Movie movie);
+    public JsonObject bookScreening(Reservation reservation, String email);
     public JsonObject editReservation(Reservation reservation);
     public JsonPrimitive signIn(String email, String password);
     public List<Reservation> getReservationList(String email);
-    public boolean cancelReservation(String id);
+    public boolean cancelReservation(Reservation reservation);
 }

@@ -11,9 +11,12 @@ namespace CinemaRest.Service.Models
     public class CinemaContext : ICinemaContext
     {
         private IConfigurationRoot ConfigRoot;
-        public CinemaContext(IConfiguration configRoot)
+        public CinemaContext()
         {
-            ConfigRoot = (IConfigurationRoot)configRoot;
+            ConfigRoot = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build(); 
             InitUsers();
             InitMovies();
             InitActors();
@@ -23,8 +26,6 @@ namespace CinemaRest.Service.Models
             InitSeats();
             InitScreenings();
             InitReservations();
-            foreach (var s in Screenings)
-                s.SetReservedSeats(this);
         }
 
         /// <summary>

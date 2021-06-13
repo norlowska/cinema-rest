@@ -103,7 +103,7 @@ public class ReservationCellController extends ListCell<Reservation> {
                 public void handle(MouseEvent event) {
                     if (reservation != null) {
                         try {
-                            if(service.cancelReservation(reservation.getId())) {
+                            if(service.cancelReservation(reservation)) {
                                 getListView().getItems().remove(getItem());
                                 return;
                             }

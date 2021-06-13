@@ -36,7 +36,7 @@ public class ReservationScreenController implements Initializable {
     private ICinemaService service;
     private ObservableList<Seat> seats;
     private Screening screening;
-    private Reservation reservation;
+    private Reservation reservation = new Reservation();
     private boolean isEdit;
 
     private Movie movie;
@@ -102,7 +102,7 @@ public class ReservationScreenController implements Initializable {
         infoLabel.setText("Tytuł: " + movie.getTitle() +
                 "\nData: " + formatter.format(screening.getFullDate()) +
                 "\nSala: " + screening.getScreen().getName());
-        posterView.setImage(new Image(new ByteArrayInputStream(service.getPoster(movie.getId()))));
+        posterView.setImage(new Image(new ByteArrayInputStream(service.getPoster(movie))));
         seatsView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         seatsView.setItems(seats);
         seatsView.setCellFactory(seatsView -> new SeatCellController());
@@ -120,13 +120,15 @@ public class ReservationScreenController implements Initializable {
                 List<Seat> seats = new ArrayList<>();
                 seats.addAll(selectedIndices);
                 JsonObject res;
+
+                Reservation newReservation = reservation;
+                newReservation.setSeats(seats);
                 if(isEdit) {
-                    Reservation newReservation = reservation;
-                    newReservation.setSeats(seats);
                     res = service.editReservation(newReservation);
                 }
                 else {
-                     res = service.bookScreening(screening.getId(), seats, Main.getUserEmail());
+                    newReservation.setScreening(screening);
+                     res = service.bookScreening(newReservation, Main.getUserEmail());
                 }
 
                 if(Integer.parseInt(res.get("status").getAsString()) > 300) {

@@ -72,7 +72,7 @@ public class MovieListCell extends ListCell<Movie> {
             castStr =  castStr.substring(0, castStr.length() -2);
             cast.setText(castStr);
             ICinemaService service = new CinemaRestService();
-            poster.setImage(new Image(new ByteArrayInputStream((service.getPoster(movie.getId())))));
+            poster.setImage(new Image(new ByteArrayInputStream((service.getPoster(movie)))));
             setText(null);
             setGraphic(anchorPane);
         }

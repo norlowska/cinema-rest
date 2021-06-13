@@ -1,5 +1,6 @@
 package cinemarest.client.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Reservation {
@@ -8,6 +9,15 @@ public class Reservation {
     private Screening screening;
     private List<Seat> seats;
     private boolean deleted;
+    private List<Link> links = new ArrayList<Link>();
+
+    public List<Link> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<Link> links) {
+        this.links = links;
+    }
 
     public String getId() {
         return id;

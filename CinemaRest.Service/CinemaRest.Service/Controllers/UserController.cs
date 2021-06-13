@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using CinemaRest.Service.Enums;
+using CinemaRest.Service.Models;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,6 +15,12 @@ namespace CinemaRest.Service.Controllers
     [HeaderAuthorizationBasic]
     public class UserController : ControllerBase
     {
+
+        private const string ENDPOINT = "/api/user";
+        private const string REL_LOGIN = "login";
+        private const string REL_SELF = "self";
+        private string HOST = string.Empty;
+
         public UserController() { }
 
         [HttpPost("[action]")]
@@ -22,12 +30,27 @@ namespace CinemaRest.Service.Controllers
         {
             try
             {
-                return new OkObjectResult("Success");
+                HOST = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host;
+                return new OkObjectResult(new { Message = "Success", Links = GetLinks(Guid.Empty, REL_LOGIN) });
             }
             catch (Exception ex)
             {
                 return new UnauthorizedObjectResult("Wystąpił błąd podczas aktualizacji rezerwacji. " + ex.Message);
             }
+        }
+
+        private List<Link> GetLinks(Guid id, string self)
+        {
+            string url = HOST + ENDPOINT + "/";
+            return new List<Link>()
+            {
+                new Link()
+                {
+                    Method=HttpMethodEnum.GET.ToString(),
+                    Rel= self == REL_LOGIN ? REL_SELF : REL_LOGIN,
+                    Href= url + "Login"
+                }
+            };
         }
     }
 }

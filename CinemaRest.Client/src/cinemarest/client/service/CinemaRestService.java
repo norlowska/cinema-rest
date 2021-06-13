@@ -2,10 +2,7 @@ package cinemarest.client.service;
 
 import cinemarest.client.Main;
 import cinemarest.client.RequestInterceptor;
-import cinemarest.client.models.MakeReservationRequest;
-import cinemarest.client.models.Movie;
-import cinemarest.client.models.Reservation;
-import cinemarest.client.models.Seat;
+import cinemarest.client.models.*;
 import cinemarest.client.views.RepertoireController;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
@@ -49,10 +46,10 @@ public class CinemaRestService implements ICinemaService {
     }
 
     @Override
-    public byte[] getPoster(String id) {
+    public byte[] getPoster(Movie movie) {
         OkHttpClient client = httpClient.build();
         Request request = new Request.Builder()
-                .url("https://localhost:44318/api/Movie/" + id + "/Poster")
+                .url(movie.getLinks().stream().filter(i -> i.getRel().equals("get_poster")).findFirst().orElse(new Link("https://localhost:44318/api/Movie/" + movie.getId() + "/Poster")).getHref())
                 .method("GET", null)
                 .build();
         try(Response response = client.newCall(request).execute()) {
@@ -65,17 +62,17 @@ public class CinemaRestService implements ICinemaService {
     }
 
     @Override
-    public JsonObject bookScreening(String id, List<Seat> seats, String email) {
+    public JsonObject bookScreening(Reservation reservation, String email) {
         OkHttpClient client = httpClient.build();
 
         MakeReservationRequest dto = new MakeReservationRequest();
-        dto.setScreeningId(id);
-        dto.setSeats(seats);
+        dto.setScreeningId(reservation.getScreening().getId());
+        dto.setSeats(reservation.getSeats());
         String data = gson.toJson(dto);
         RequestBody body = RequestBody.create(data, JSON);
 
         Request request = new Request.Builder()
-                .url("https://localhost:44318/api/Reservation/")
+                .url(reservation.getLinks().stream().filter(i -> i.getRel().equals("create_reservation")).findFirst().orElse(new Link("https://localhost:44318/api/Reservation/")).getHref())
                 .method("POST", body)
                 .build();
 
@@ -90,7 +87,7 @@ public class CinemaRestService implements ICinemaService {
         RequestBody body = RequestBody.create(data, JSON);
 
         Request request = new Request.Builder()
-                .url("https://localhost:44318/api/Reservation/" + reservation.getId())
+                .url(reservation.getLinks().stream().filter(i -> i.getRel().equals("update_reservation")).findFirst().orElse(new Link("https://localhost:44318/api/Reservation/" + reservation.getId())).getHref())
                 .method("PUT", body)
                 .build();
         return getReservationResponseJsonObject(client, request);
@@ -161,10 +158,10 @@ public class CinemaRestService implements ICinemaService {
     }
 
     @Override
-    public boolean cancelReservation(String id) {
+    public boolean cancelReservation(Reservation reservation) {
         OkHttpClient client = httpClient.build();
         Request request = new Request.Builder()
-                .url("https://localhost:44318/api/Reservation/" + id)
+                .url(reservation.getLinks().stream().filter(i -> i.getRel().equals("delete_reservation")).findFirst().orElse(new Link("https://localhost:44318/api/Reservation/" + reservation.getId())).getHref())
                 .method("DELETE", null)
                 .build();
         try(Response response = client.newCall(request).execute()) {

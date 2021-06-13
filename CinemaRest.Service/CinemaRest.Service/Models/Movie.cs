@@ -35,7 +35,10 @@ namespace CinemaRest.Service.Models
             {
                 m.Screenings = m.Screenings.Where(item => item.Date == date.ToString("yyyy-MM-dd")).Select(x=>x.DeepClone()).ToList();
                 foreach (var s in m.Screenings)
+                {
                     s.Movie = null;
+                    s.Screen.Seats = null;
+                }
             }
             return movies;
         }

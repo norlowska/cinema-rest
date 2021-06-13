@@ -9,19 +9,23 @@ namespace CinemaRest.Service.Models
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public Movie Movie { get; set; }
-        public string Date { get; set; } 
+        public string Date { get; set; }
         public string Time { get; set; }
-        public DateTime FullDate { get; set; }  
+        public DateTime FullDate { get; set; }
         public Screen Screen { get; set; }
-        public List<Seat> ReservedSeats { get; set; }
-        
+        private List<Seat> _reservedSeats;
+        public List<Seat> ReservedSeats { get { return new CinemaContext().Reservations.Where(item => item.Screening.Id == this.Id).SelectMany(item => item.Seats).ToList(); } set { _reservedSeats = value; } }
+
 
         private List<Seat> _freeSeats;
         public List<Seat> FreeSeats
         {
             get
             {
-                return Screen.Seats != null ? Screen.Seats.Where(item => ReservedSeats.All(i => i.Id != item.Id)).ToList() : null ;
+                return new CinemaContext().Screens.Where(item => item.Id == Screen.Id).FirstOrDefault().Seats.Where(item => ReservedSeats.All(i => i.Id != item.Id)).Select(item =>
+                {
+                    item.Screen = null; return item;
+                }).ToList();
             }
             set
             {
@@ -40,11 +44,6 @@ namespace CinemaRest.Service.Models
             Time = getTime();
             this.Movie = ExtensionMethods.DeepClone<Movie>(movie);
             this.Screen = screen;
-        }
-
-        public void SetReservedSeats(CinemaContext dc)
-        {
-            this.ReservedSeats = dc.Reservations.Where(item => item.Screening.Id == this.Id).SelectMany(item => item.Seats).ToList();
         }
 
         public string getDate()
@@ -68,7 +67,7 @@ namespace CinemaRest.Service.Models
         /// <param name="reservedSeats"></param>
         /// <param name="chosenSeats"></param>
         /// <returns>Prawda, jeśli którekolwiek z miejsc jest już zarezerwowane</returns>
-        public bool checkSeats(List<Seat> chosenSeats)
+        public bool checkSeats(CinemaContext dc, List<Seat> chosenSeats)
         {
             return chosenSeats.Any(item => !Screen.Seats.Exists(i => i.Row == item.Row && i.SeatNumber == item.SeatNumber) || this.ReservedSeats.Any(i => i.Row == item.Row && i.SeatNumber == item.SeatNumber));
         }
