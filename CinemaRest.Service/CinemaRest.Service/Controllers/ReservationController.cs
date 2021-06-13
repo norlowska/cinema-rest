@@ -88,6 +88,7 @@ namespace CinemaRest.Service.Controllers
                 r.Screening.Movie.Characters = null;
                 r.Screening.Movie.Crew = null;
                 r.Screening.Screen.Seats = null;
+                r.Screening.FreeSeats = null;
                 r.Links = GetLinks(r.Id, REL_GET_ALL);
             }
             return user.Reservations;

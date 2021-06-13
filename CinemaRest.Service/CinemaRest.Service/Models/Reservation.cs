@@ -32,7 +32,7 @@ namespace CinemaRest.Service.Models
 
         public static Reservation MakeReservation(CinemaContext dc, Screening screening, List<Seat> chosenSeats, string email) //w argumecnie/broszurze trzeba przekazać na jaki seans oraz jake siedzenia rezerwujesz oraz uzytkownika
         {
-            if (screening.checkSeats(dc, chosenSeats)) return null;
+            if (screening.checkSeats(chosenSeats)) return null;
             else
             {
                 Reservation newReservation = new Reservation();

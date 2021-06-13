@@ -26,6 +26,8 @@ namespace CinemaRest.Service.Models
             InitSeats();
             InitScreenings();
             InitReservations();
+            foreach (var s in Screenings)
+                s.SetReservedSeats(this);
         }
 
         /// <summary>

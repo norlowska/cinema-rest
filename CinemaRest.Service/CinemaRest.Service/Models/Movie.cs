@@ -31,9 +31,9 @@ namespace CinemaRest.Service.Models
         public static List<Movie> GetRepertoire(CinemaContext dc, DateTime date)
         {
             List<Movie> movies = dc.Movies.Where(item => item.Screenings.Any(i => i.Date == date.ToString("yyyy-MM-dd"))).Select(x => x.DeepClone()).ToList();
-            foreach(var m in movies)
+            foreach (var m in movies)
             {
-                m.Screenings = m.Screenings.Where(item => item.Date == date.ToString("yyyy-MM-dd")).Select(x=>x.DeepClone()).ToList();
+                m.Screenings = m.Screenings.Where(item => item.Date == date.ToString("yyyy-MM-dd")).Select(x => { x.SetReservedSeats(dc); return x.DeepClone(); }).ToList();
                 foreach (var s in m.Screenings)
                 {
                     s.Movie = null;
